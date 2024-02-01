@@ -45,16 +45,16 @@ df_blood_donor = source_data_from_parquet(BLOOD_DONOR)
 # Transform Data
 #transform date column to datetime dtype
 df_donation_facility = transform_date(df_donation_facility)
-df_donation_state = transform_date(df_donation_facility)
-df_newdonor_facility = transform_date(df_donation_facility)
-df_newdonor_state = transform_date(df_donation_facility)
+df_donation_state = transform_date(df_donation_state)
+df_newdonor_facility = transform_date(df_newdonor_facility)
+df_newdonor_state = transform_date(df_newdonor_state)
 df_blood_donor = transform_date(df_blood_donor)
 
 #transform hospital/state column to string dtype
 df_donation_facility = transform_str(df_donation_facility)
-df_donation_state = transform_str(df_donation_facility)
-df_newdonor_facility = transform_str(df_donation_facility)
-df_newdonor_state = transform_str(df_donation_facility)
+df_donation_state = transform_str(df_donation_state)
+df_newdonor_facility = transform_str(df_newdonor_facility)
+df_newdonor_state = transform_str(df_newdonor_state)
 df_blood_donor = transform_str(df_blood_donor)
 
 # =========================================================
