@@ -26,10 +26,6 @@ DB_TABLE_NEWDONATE_FACILITY = os.getenv('DB_TABLE_NEWDONATE_FACILITY')
 DB_TABLE_NEWDONATE_STATES = os.getenv('DB_TABLE_NEWDONATE_STATES')
 DB_TABLE_BLOOD_DONOR = os.getenv('DB_TABLE_BLOOD_DONOR')
 
-# Get today's date
-today = date.today()
-latest_update = today - timedelta(days=1)
-previous_update = latest_update - timedelta(days=1)
 
 
 @contextmanager
@@ -57,26 +53,22 @@ def session_scope():
 def daily_trend_facility(latest_date, previous_date):
     try:
         str_latest = latest_date.strftime('%Y-%m-%d')
-        str_previous = previous_date.strftime('%Y-%m-%d')
+        #str_previous = previous_date.strftime('%Y-%m-%d')
         with session_scope() as session:
             query1 = f" SELECT `date`,`hospital`,`daily` FROM {DB_TABLE_DONATE_FACILITY} WHERE `date` = '{str_latest}'"
-            query2 = f" SELECT `date`,`hospital`,`daily` FROM {DB_TABLE_DONATE_FACILITY} WHERE `date` = '{str_previous}'"
             df1 = pd.read_sql_query(query1, con=session.bind)
-            if df1.empty:
+
+            while df1.empty:
                 latest_date = latest_date - timedelta(days=1)
                 previous_date = previous_date - timedelta(days=1)
                 str_latest = latest_date.strftime('%Y-%m-%d')
-                str_previous = previous_date.strftime('%Y-%m-%d')
                 query1 = f" SELECT `date`,`hospital`,`daily` FROM {DB_TABLE_DONATE_FACILITY} WHERE `date` = '{str_latest}'"
-                query2 = f" SELECT `date`,`hospital`,`daily` FROM {DB_TABLE_DONATE_FACILITY} WHERE `date` = '{str_previous}'"
                 df1 = pd.read_sql_query(query1, con=session.bind)
-                df2 = pd.read_sql_query(query2, con=session.bind)
-                return print_daily_trend_facility(df1, df2, latest_date, previous_date)
-                # return df1, df2
             else:
+                str_previous = previous_date.strftime('%Y-%m-%d')
+                query2 = f" SELECT `date`,`hospital`,`daily` FROM {DB_TABLE_DONATE_FACILITY} WHERE `date` = '{str_previous}'"
                 df2 = pd.read_sql_query(query2, con=session.bind)
                 return print_daily_trend_facility(df1, df2, latest_date, previous_date)
-                # return df1, df2
 
     except Exception as e:
         print("Data load error: " + str(e))
@@ -91,26 +83,26 @@ def print_daily_trend_facility(df1, df2, latest_date, previous_date):
         daily_trends.rename(columns={'daily_x': previous_date, 'daily_y': latest_date}, inplace=True)
 
         # Comparing daily donation trends
-        daily_trends['trends'] = daily_trends[latest_update] - daily_trends[previous_update]
+        daily_trends['trends'] = daily_trends[latest_date] - daily_trends[previous_date]
 
         # Print trends
         message = "The following are the latest trends of blood donation in each donation facility in Malaysia\n"
         for index, row in daily_trends.iterrows():
             message += "\n"
             message += f"Donation Facility: {row['hospital']}\n"
-            message += f"Donation on {previous_update}: {row[previous_update]}\n"
-            message += f"Donation on {latest_update}: {row[latest_update]}\n"
+            message += f"Donation on {previous_date}: {row[previous_date]}\n"
+            message += f"Donation on {latest_date}: {row[latest_date]}\n"
             message += f"Donation trend: {row['trends']}\n"
-        return message, daily_trends
+        return message, daily_trends, daily_trend_facility_viz(daily_trends,latest_date, previous_date)
 
     except Exception as e:
         print("Error: " + str(e))
         return None, None
 
 
-def daily_trend_facility_viz(df):
+def daily_trend_facility_viz(df,latest_date,previous_date):
     daily_trends_facility_viz = df.copy().set_index('hospital')
-    ax = daily_trends_facility_viz[[previous_update, latest_update]].plot.bar(fontsize=8.0,
+    ax = daily_trends_facility_viz[[previous_date, latest_date]].plot.bar(fontsize=8.0,
                                                                               xlabel="Blood Donation Facility",
                                                                               ylabel="Number of blood donation",
                                                                               figsize=(15, 5), stacked=False,

@@ -68,10 +68,10 @@ def ask_trend_facility(message):
 def latest_trend_analysis_facility(message):
     # Run facility latest trend function script
     bot.send_message(message.chat.id, "Processing data. Please wait for a moment")
-    text, df_daily_trend = daily_trend_facility(latest_update, previous_update)
+    text, df_daily_trend, buf = daily_trend_facility(latest_update, previous_update)
 
     # Generate the plot using daily_trend_facility_viz
-    buf = daily_trend_facility_viz(df_daily_trend)
+    #buf = daily_trend_facility_viz(df_daily_trend)
 
     # Send the image to the user
     bot.send_photo(message.chat.id, buf)
@@ -91,8 +91,8 @@ def trend_7days_analysis_facility(message):
     thread = threading.Thread(target=send_plot, args=(message, latest_7_days))
     thread.start()
 
-def send_plot(message, latest_7_days):
-    fig = trend_days_data(latest_7_days)
+def send_plot(message, time_frame):
+    fig = trend_days_data(time_frame)
     # Send the image to the user
     bot.send_photo(message.chat.id, fig)
 
