@@ -1,6 +1,7 @@
 import pandas as pd
 
-#transformation function: date -> change dtype from object to datetime
+
+# transformation function: date -> change dtype from object to datetime
 def transform_date(df):
     if 'date' in df.columns:
         df['date'] = pd.to_datetime(df['date'])
@@ -9,10 +10,11 @@ def transform_date(df):
         df['birth_date'] = pd.to_datetime(df['birth_date'])
     else:
         print("Column doesnt' exist")
-        
+
     return df
 
-#transformation function: hospital -> change dtype from object to string
+
+# transformation function: hospital -> change dtype from object to string
 def transform_str(df):
     if 'hospital' in df.columns:
         df['hospital'] = df[['hospital']].convert_dtypes(infer_objects=True)
@@ -22,5 +24,5 @@ def transform_str(df):
         df['donor_id'] = df[['donor_id']].convert_dtypes(infer_objects=True)
     else:
         print("Column doesnt' exist")
-        
+
     return df

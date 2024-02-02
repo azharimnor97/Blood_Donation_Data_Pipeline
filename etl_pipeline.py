@@ -1,14 +1,9 @@
 import pandas as pd
-import mysql.connector
-from sqlalchemy import create_engine, text
-from sqlalchemy.orm import sessionmaker
 import os
-from contextlib import contextmanager
 from etl.extract import source_data_from_csv, source_data_from_parquet
 from etl.transform import transform_date, transform_str
 from etl.load import load
 from dotenv import load_dotenv
-from datetime import datetime, time, date, timedelta
 
 load_dotenv('source.env')
 
